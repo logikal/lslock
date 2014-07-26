@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bazaar'
+require 'optparse'
+require 'pp'
+require 'fileutils'
+
+options = {}
+optparse  = OptionParser.new do |opts|
+  opts.banner = 'Usage: lslock <arguments>'
+  opts.separator ''
+  opts.separator 'Optional Arguments:'
+  options[:directory] = '/tmp/lslock-test'
+  opts.on('-d', '--directory <path>',
+          'the path to look for locked files in') do |directory|
+    options[:directory] = directory
+  end
+end
+optparse.parse!
+
+# safely create a new directory when we run this.
+abort('You specified a nonexistent directory!
+    You may want to make sure lslock_test is running or that you used the -d flag.
+    Run lslock -h for more info') unless File.directory? options[:directory]
+
+
