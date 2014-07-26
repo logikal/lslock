@@ -7,7 +7,7 @@ require 'fileutils'
 
 options = {}
 optparse  = OptionParser.new do |opts|
-  opts.banner = 'lslock-test --directory <directory>'
+  opts.banner = 'lslock_test --directory <directory>'
   options[:directory] = '/tmp/lslock-test'
   opts.on('-d', '--directory <path>',
           'the directory to create locks in') do |directory|
@@ -18,20 +18,44 @@ optparse  = OptionParser.new do |opts|
           'number of locks to create') do |num_locks|
     options[:num_locks] = num_locks
   end
+  options[:seconds] = 30
+  opts.on('-s', '--seconds <integer>',
+          'number of seconds to hold locks for') do |seconds|
+    options[:seconds] = seconds
+  end
 end
 optparse.parse!
 
+# safely create a new directory when we run this.
 puts "Will create directory #{options[:directory]} if it does not exist."
 FileUtils.mkdir_p options[:directory] unless File.directory? options[:directory]
 
+# create unique names so we don't get collisons later
 files = []
 options[:num_locks].times do
   files << Bazaar.heroku
 end
 
+# for each unique file, fork a process to hold
+# an exclusive lock
+
 files.each do |file|
-  puts "creating file #{options[:directory]}/#{file}"
-  new_file = File.new("#{options[:directory]}/#{file}", 'w')
-  new_file.puts file
-  new_file.close
+  Process.detach(Process.fork{
+    fullpath = "#{options[:directory]}/#{file}"
+    puts "creating file #{fullpath}"
+
+    f = File.open(fullpath,
+                  File::RDWR | File::CREAT, 0644)
+
+    puts "holding exclusive lock on #{fullpath}"
+
+    f.flock(File::LOCK_EX)
+    # hold this open for a while, so we can inspect and run lslock
+    # TODO: Make this configurable
+    sleep 30
+    f.close
+    # clean up after ourselves, work is done.
+    File.delete(fullpath)
+  })
 end
+p Process.waitall
