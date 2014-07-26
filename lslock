@@ -34,18 +34,21 @@ files.each do |file|
   maj = File.stat(file).dev_major.to_s(16)
   min = "%02d" % File.stat(file).dev_minor.to_s(16)
   inode = File.stat(file).ino
-  fileshash["#{file}"] = "#{maj}:#{min}:#{inode}"
+  fileshash["#{maj}:#{min}:#{inode}"] = "#{file}"
 end
-
 
 # now let's get the list of locks
 # I know awk better.
 locks = {}
-#locks = Hash.new { |h, k| h[k] = Hash.new(&h.default_proc)  }
 
 %x(cat /proc/locks | awk {' print $5 ": " $6'}).lines.each do |line|
   line = line.split(' ')
-  locks.merge! "#{line[0].chomp(':')}" => line[1]
+  locks.merge! "#{line[1]}" => "#{line[0].chomp(':')}"
 end
-
 pp locks
+# now we need to actually find the things that have locks in this directory, 
+# and pair them up with pids
+
+#locks.each do |lock|
+  #find the inode!
+
