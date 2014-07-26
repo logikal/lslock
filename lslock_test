@@ -3,6 +3,7 @@ require 'rubygems'
 require 'bazaar'
 require 'optparse'
 require 'pp'
+require 'fileutils'
 
 options = {}
 optparse  = OptionParser.new do |opts|
@@ -20,11 +21,17 @@ optparse  = OptionParser.new do |opts|
 end
 optparse.parse!
 
+puts "Will create directory #{options[:directory]} if it does not exist."
+FileUtils.mkdir_p options[:directory] unless File.directory? options[:directory]
+
 files = []
 options[:num_locks].times do
   files << Bazaar.heroku
 end
 
 files.each do |file|
-  File.new("#{options[:directory]}/#{file}")
+  puts "creating file #{options[:directory]}/#{file}"
+  new_file = File.new("#{options[:directory]}/#{file}", 'w')
+  new_file.puts file
+  new_file.close
 end
