@@ -45,10 +45,16 @@ locks = {}
   line = line.split(' ')
   locks.merge! "#{line[1]}" => "#{line[0].chomp(':')}"
 end
-pp locks
+
 # now we need to actually find the things that have locks in this directory, 
 # and pair them up with pids
 
-#locks.each do |lock|
-  #find the inode!
-
+locks.each do |inode,pid|
+  # some locks don't have a file associated with them
+  # we don't care about those, just the ones in the directory we care about.
+  #
+  # Clarity - we're referencing 'inode' here, as the key in the fileshash hash
+  if !fileshash[inode].nil? && fileshash[inode].start_with?(options[:directory])
+    puts "#{locks[inode]} #{fileshash[inode]}"
+  end
+end
