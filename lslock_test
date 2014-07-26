@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bazaar'
+require 'optparse'
+require 'pp'
+
+options = {}
+optparse  = OptionParser.new do |opts|
+  opts.banner = 'lslock-test --directory <directory>'
+  options[:directory] = '/tmp/lslock-test'
+  opts.on('-d', '--directory <path>',
+          'the directory to create locks in') do |directory|
+    options[:directory] = directory
+  end
+  options[:num_locks] = 10
+  opts.on('-n' '--numlocks <integer>',
+          'number of locks to create') do |num_locks|
+    options[:num_locks] = num_locks
+  end
+end
+optparse.parse!
+
+files = []
+options[:num_locks].times do
+  files << Bazaar.heroku
+end
+
+files.each do |file|
+  File.new("#{options[:directory]}/#{file}")
+end
