@@ -18,7 +18,6 @@ optparse  = OptionParser.new do |opts|
 end
 optparse.parse!
 
-# safely create a new directory when we run this.
 abort('You specified a nonexistent directory!
     You may want to make sure lslock_test is running or that you used the -d flag.
     Run lslock -h for more info') unless File.directory? options[:directory]
