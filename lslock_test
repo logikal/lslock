@@ -7,27 +7,28 @@ require 'fileutils'
 
 options = {}
 optparse  = OptionParser.new do |opts|
-  opts.banner = 'lslock_test --directory <directory>'
+  opts.banner = 'Usage: lslock_test <arguments>'
+  opts.separator ''
+  opts.separator 'Optional Arguments:'
   options[:directory] = '/tmp/lslock-test'
   opts.on('-d', '--directory <path>',
-          'the directory to create locks in') do |directory|
+          'the directory to create locks in, will be created if it does not exist') do |directory|
     options[:directory] = directory
   end
   options[:num_locks] = 10
-  opts.on('-n' '--numlocks <integer>',
+  opts.on('-n', '--numlocks <integer>',
           'number of locks to create') do |num_locks|
-    options[:num_locks] = num_locks
+    options[:num_locks] = num_locks.to_i
   end
   options[:seconds] = 30
   opts.on('-s', '--seconds <integer>',
           'number of seconds to hold locks for') do |seconds|
-    options[:seconds] = seconds
+    options[:seconds] = seconds.to_i
   end
 end
 optparse.parse!
 
 # safely create a new directory when we run this.
-puts "Will create directory #{options[:directory]} if it does not exist."
 FileUtils.mkdir_p options[:directory] unless File.directory? options[:directory]
 
 # create unique names so we don't get collisons later
@@ -42,20 +43,19 @@ end
 files.each do |file|
   Process.detach(Process.fork{
     fullpath = "#{options[:directory]}/#{file}"
-    puts "creating file #{fullpath}"
+    # puts "creating file #{fullpath}"
 
     f = File.open(fullpath,
                   File::RDWR | File::CREAT, 0644)
 
-    puts "holding exclusive lock on #{fullpath}"
+    puts "#{Process.pid}  #{fullpath}"
 
     f.flock(File::LOCK_EX)
     # hold this open for a while, so we can inspect and run lslock
-    # TODO: Make this configurable
-    sleep 30
+    sleep options[:seconds]
     f.close
     # clean up after ourselves, work is done.
     File.delete(fullpath)
   })
 end
-p Process.waitall
+Process.waitall
