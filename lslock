@@ -22,4 +22,30 @@ abort('You specified a nonexistent directory!
     You may want to make sure lslock_test is running or that you used the -d flag.
     Run lslock -h for more info') unless File.directory? options[:directory]
 
+# let's start by just getting a listing of items in a directory, and their inodes.
+files = Dir.glob("#{options[:directory]}/**")
+fileshash = {}
+files.each do |file|
+  # we need to get the full inode, including device ids
+  # otherwise, we're not guaranteed to work on boxes with mutliple disks
+  # that seems bad.
 
+  # Hoping this works outside of my test env - major device ids are in hex
+  maj = File.stat(file).dev_major.to_s(16)
+  min = "%02d" % File.stat(file).dev_minor.to_s(16)
+  inode = File.stat(file).ino
+  fileshash["#{file}"] = "#{maj}:#{min}:#{inode}"
+end
+
+
+# now let's get the list of locks
+# I know awk better.
+locks = {}
+#locks = Hash.new { |h, k| h[k] = Hash.new(&h.default_proc)  }
+
+%x(cat /proc/locks | awk {' print $5 ": " $6'}).lines.each do |line|
+  line = line.split(' ')
+  locks.merge! "#{line[0].chomp(':')}" => line[1]
+end
+
+pp locks
