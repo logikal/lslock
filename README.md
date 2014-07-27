@@ -81,3 +81,5 @@ If you plan on using `lslock_test`, you'll need some gems, listed in the Gemfile
 gem install bundle
 bundle install
 ```
+
+Note: this was tested on a base Ubuntu 14.04 image in Digital Ocean. I have some concerns about device ID's on other systems.
