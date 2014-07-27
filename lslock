@@ -10,7 +10,7 @@ optparse  = OptionParser.new do |opts|
   opts.separator 'Optional Arguments:'
   options[:directory] = '/tmp/lslock-test'
   opts.on('-d', '--directory <path>',
-          'the path to look for locked files in') do |directory|
+          'the path to look for locked files in (default: /tmp/lslock-test)') do |directory|
     options[:directory] = directory
   end
 end

@@ -12,17 +12,17 @@ optparse  = OptionParser.new do |opts|
   opts.separator 'Optional Arguments:'
   options[:directory] = '/tmp/lslock-test'
   opts.on('-d', '--directory <path>',
-          'the directory to create locks in, will be created if it does not exist') do |directory|
+          'the directory to create locks in, will be created if it does not exist (default: /tmp/lslock-test)') do |directory|
     options[:directory] = directory
   end
   options[:num_locks] = 10
   opts.on('-n', '--numlocks <integer>',
-          'number of locks to create') do |num_locks|
+          'number of locks to create (default: 10)') do |num_locks|
     options[:num_locks] = num_locks.to_i
   end
   options[:seconds] = 30
   opts.on('-s', '--seconds <integer>',
-          'number of seconds to hold locks for') do |seconds|
+          'number of seconds to hold locks for (default: 30)') do |seconds|
     options[:seconds] = seconds.to_i
   end
 end

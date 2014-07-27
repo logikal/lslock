@@ -13,12 +13,12 @@ This little guy will create some files and lock them for you, so you have someth
 
 ```
 #> lslock_test -h
-Usage: lslock_test <arguments>
+sage: lslock_test <arguments>
 
 Optional Arguments:
-    -d, --directory <path>           the directory to create locks in, will be created if it does not exist
-    -n, --numlocks <integer>         number of locks to create
-    -s, --seconds <integer>          number of seconds to hold locks for
+    -d, --directory <path>           the directory to create locks in, will be created if it does not exist (default: /tmp/lslock-test)
+    -n, --numlocks <integer>         number of locks to create (default: 10)
+    -s, --seconds <integer>          number of seconds to hold locks for (default: 30)
 ```
 
 ### `lslock`
@@ -33,7 +33,7 @@ Usage: lslock <arguments>
     No output means there are no locked files in the specified directory
 
 Optional Arguments:
-    -d, --directory <path>           the path to look for locked files in
+    -d, --directory <path>           the path to look for locked files in (default: /tmp/lslock-test)
 ```
 
 ## Installation
