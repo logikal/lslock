@@ -14,7 +14,7 @@ This little guy will create some files and lock them for you, so you have someth
 
 ```
 #> lslock_test -h
-sage: lslock_test <arguments>
+Usage: lslock_test <arguments>
 
 Optional Arguments:
     -d, --directory <path>           the directory to create locks in, will be created if it does not exist (default: /tmp/lslock-test)
