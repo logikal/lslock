@@ -29,9 +29,11 @@ end
 optparse.parse!
 
 # safely create a new directory when we run this.
+# We DON'T delete this after running. (in case you wanted to run more of these in parallel)
 FileUtils.mkdir_p options[:directory] unless File.directory? options[:directory]
 
 # create unique names so we don't get collisons later
+# - probably overkill
 files = []
 options[:num_locks].times do
   files << Bazaar.heroku

@@ -1,13 +1,11 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'bazaar'
 require 'optparse'
-require 'pp'
-require 'fileutils'
 
 options = {}
 optparse  = OptionParser.new do |opts|
-  opts.banner = 'Usage: lslock <arguments>'
+  opts.banner = 'Usage: lslock <arguments>
+    Expected Output: a space delimited list of pids and files
+    No output means there are no locked files in the specified directory'
   opts.separator ''
   opts.separator 'Optional Arguments:'
   options[:directory] = '/tmp/lslock-test'
@@ -27,8 +25,8 @@ files = Dir.glob("#{options[:directory]}/**")
 fileshash = {}
 files.each do |file|
   # we need to get the full inode, including device ids
-  # otherwise, we're not guaranteed to work on boxes with mutliple disks
-  # that seems bad.
+  # otherwise, we're not guaranteed to work on boxes with mutliple disks.
+  # that would suck.
 
   # Hoping this works outside of my test env - major device ids are in hex
   maj = File.stat(file).dev_major.to_s(16)
@@ -38,22 +36,23 @@ files.each do |file|
 end
 
 # now let's get the list of locks
-# I know awk better.
 locks = {}
 
+# I know awk better.
 %x(cat /proc/locks | awk {' print $5 ": " $6'}).lines.each do |line|
   line = line.split(' ')
+  # use the inode as the key here to make things easier to compare later
   locks.merge! "#{line[1]}" => "#{line[0].chomp(':')}"
 end
 
 # now we need to actually find the things that have locks in this directory, 
 # and pair them up with pids
 
-locks.each do |inode,pid|
+locks.sort.each do |inode,pid|
   # some locks don't have a file associated with them
   # we don't care about those, just the ones in the directory we care about.
   #
-  # Clarity - we're referencing 'inode' here, as the key in the fileshash hash
+  # NB - we're using the lock's inode here to reference as the key in the fileshash hash
   if !fileshash[inode].nil? && fileshash[inode].start_with?(options[:directory])
     puts "#{locks[inode]} #{fileshash[inode]}"
   end
