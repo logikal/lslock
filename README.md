@@ -1,9 +1,9 @@
 # lslock
-## An interesting problem to solve
 
-It can be useful to know what files in a directory tree are currently locked by a process, and which process that is.
+It can be useful to know what files in a directory tree are currently locked by a process, and which process holds the lock for each file.
 
-Thankfully, linux provides the /proc/locks pseudo-file, that can give us this information
+Thankfully, linux provides the `/proc/locks` pseudo-file, that can give us this information.
+`lslock`  can give you this information in a more useful manner than just `cat /proc/locks`
 
 ## The code
 
@@ -23,7 +23,7 @@ Optional Arguments:
 ```
 
 #### Expected output
-`lslock_test` will show the following output, and then ve silent for 30 seconds (default)
+`lslock_test` will show the following output, and then be silent for 30 seconds (default)
 ```
 #> lslock_test
 24156  /tmp/lslock-test/joyful-fog-9532
@@ -75,7 +75,7 @@ If you're running `lslock_test` while running `lslock`, you should expect the ou
 Using your favorite ruby provider (rvm, rbenv, chruby, etc), make sure that you have a compatible version of ruby; I've used ruby-2.1.2 via rvm.
 You'll also need the `gem` command.
 
-If you plan on using lslock_test, you'll need some gems, listed in the Gemfile.
+If you plan on using `lslock_test`, you'll need some gems, listed in the Gemfile.
 
 ```
 gem install bundle
